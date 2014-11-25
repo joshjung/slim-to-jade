@@ -1,0 +1,32 @@
+{
+  "name": "slim-to-jade",
+  "author": "Joshua Jung <joshua.p.jung@gmail.com>",
+  "license": "MIT",
+  "description": "Converts slim template to jade template.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "url": "https://github.com/joshjung/slim-to-jade",
+  "homepage": "https://github.com/joshjung/slim-to-jade",
+  "email": "joshua.p.jung@gmail.com",
+  "files": [
+    "src",
+    "index.js",
+    "test"
+  ],
+  "dependencies": {
+    "atok": "^0.4.3",
+    "commander": "^2.5.0",
+    "jclass": "^1.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshjung/slim-to-jade.git"
+  },
+  "keywords": [
+    "slim",
+    "jade",
+    "conversion",
+    "converter",
+    "generator"
+  ]
+}
