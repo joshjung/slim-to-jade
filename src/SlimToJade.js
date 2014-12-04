@@ -19,7 +19,7 @@ S2J.prototype = {
     // key="val"
     t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2/, 'tKeyValue');
     // ALPHA
-    t.addRule(/^[a-zA-Z0-9\-_]+/, 'tIdentifier');
+    t.addRule(/^[a-zA-Z0-9\-_]+[\n]?/, 'tIdentifier');
     // #ALPHA
     t.addRule(/^[#][a-zA-Z0-9\-_]+/, 'tIdName');
     // .ALPHA
