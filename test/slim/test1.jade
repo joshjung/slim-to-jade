@@ -1,0 +1,19 @@
+#change-password(ng-controller='changePasswordCtrl')
+
+  form#login-form(name='changePasswordForm', error-message='')
+
+      img(src='/images/logo_grayscale.png')
+      .action-cont.info-change-pw(toggle-value='showIButton')
+        i.icon-info(ng-hide='showIButton', ng-click='showInfo(true)')
+        i.icon-undo(ng-show='showIButton', ng-click='showInfo(false)'),
+
+        div(alert='')
+
+        input#inputCurrentPassword(type='password' placeholder='Current Password' ng-model='data.user.passwordCurrent' name='passwordCurrent' validate='{ passwordErrorCurrent: validateCurrentPassword() }', focus-me='true')
+
+        input#inputNewPassword(type='password' placeholder='New Password' ng-model='data.user.password' validate='{ passwordErrorComplexity: validatePasswordComplexity() }' name='password', required='')
+
+        input#inputNewPasswordRe(type='password' placeholder='New Password (re-enter)' ng-model='data.user.passwordConfirm' validate='{ passwordErrorEqualConfirm: validatePasswordEquality() }' name='passwordConfirm', required='')
+
+        input.btn.btn-primary(type='submit' value='Change Password' ng-click='changePassword()', ng-disabled='changePasswordForm.$invalid')
+  div.loader(us-spinner='defaultSpin', visible-if='loading')

@@ -16,8 +16,6 @@ S2J.prototype = {
     // ALPHA = 'ALPHA' 
     // | ALPHA \n
     t.addRule(/^\|.*\n/, 'tPipeEndOfLine');
-    // text to end of line \n
-    t.addRule(/^[^\=]+\n$/, 'valueEndOfLine');
     // key="val"
     t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2/, 'tKeyValue');
     // ALPHA
@@ -26,11 +24,13 @@ S2J.prototype = {
     t.addRule(/^[#][a-zA-Z0-9\-_]+/, 'tIdName');
     // .ALPHA
     t.addRule(/^\.[a-zA-Z0-9\-_]+/, 'tClassName');
+    // text to end of line \n
+    t.addRule(/^[^#\.\s][^\=]*\n$/, 'valueEndOfLine');
     // whitespace
     t.addRule(/^[ \t]+/, 'tWhitespace');
 
     t.on('token', function (token, type) {
-      console.log('tok:', token.content);
+      console.log('tok', token.content, token.type)
       self[type](token);
     });
 
