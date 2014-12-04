@@ -15,21 +15,22 @@ S2J.prototype = {
 
     // ALPHA = 'ALPHA' 
     // | ALPHA \n
-    t.addRule(/^\|.*\n$/, 'tPipeEndOfLine');
-    // key="val" text to end of line \n
-    t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2[^\=\n]+[\r]?[\n]$/, 'tKeyValueEndOfLine');
+    t.addRule(/^\|.*\n/, 'tPipeEndOfLine');
+    // text to end of line \n
+    t.addRule(/^[^\=]+\n$/, 'valueEndOfLine');
     // key="val"
-    t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2$/, 'tKeyValue');
+    t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2/, 'tKeyValue');
     // ALPHA
-    t.addRule(/^[a-zA-Z0-9\-_]+$/, 'tIdentifier');
+    t.addRule(/^[a-zA-Z0-9\-_]+/, 'tIdentifier');
     // #ALPHA
-    t.addRule(/^[#][a-zA-Z0-9\-_]+$/, 'tIdName');
+    t.addRule(/^[#][a-zA-Z0-9\-_]+/, 'tIdName');
     // .ALPHA
-    t.addRule(/^\.[a-zA-Z0-9\-_]+$/, 'tClassName');
+    t.addRule(/^\.[a-zA-Z0-9\-_]+/, 'tClassName');
     // whitespace
-    t.addRule(/^[ \t]+$/, 'tWhitespace');
+    t.addRule(/^[ \t]+/, 'tWhitespace');
 
     t.on('token', function (token, type) {
+      console.log('tok:', token.content);
       self[type](token);
     });
 
@@ -106,18 +107,8 @@ S2J.prototype = {
       value: s[1]
     });
   },
-  tKeyValueEndOfLine: function (token) {
-    var s = token.content.split('='),
-        s2 = s[1].split(/['"]/);
-
-    s[1] = '"' + s2[1] + '"';
-
-    var content = s2[2].replace('\n', '');
-
-    this.updateNode(undefined, undefined, undefined, {
-      key: s[0],
-      value: s[1]
-    }, content);
+  valueEndOfLine: function (token) {
+    this.updateNode(undefined, undefined, undefined, undefined, token.content.replace('\n', ''));
   },
   tWhitespace: function (token) {
     if (!this.node) {

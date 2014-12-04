@@ -1,75 +1,19 @@
-#account-cont ng-controller='accountCtrl' page-title='pageTitle()'
-  div navbar='asdf'
-  #account-cont-inner ng-form='' name='accountForm' error-message=''
-    .notifications
-      div alert=''
-    #account-content
-      #personal-info.row-fluid
-        h3.first Personal Information
-        .form-horizontal
-          .control-group
-            label.control-label for='inputFirstName' First Name
-            .controls
-              input#inputFirstName type='text' ng-model='data.user.firstname' required='' placeholder='First Name' name='firstname'
-          .control-group
-            label.control-label for='inputLastName' Last Name
-            .controls
-              input#inputLastName type='text' ng-model='data.user.lastname' required='' placeholder='Last Name' name='lastname'
-          .control-group
-            label.control-label for='inputCompany' Company
-            .controls
-              input#inputCompany type='text' ng-model='data.user.company' placeholder='Company'
-      #contact-info.row-fluid
-        h3 Contact Information
-        .form-horizontal
-          .control-group
-            label.control-label for='inputEmail' Email
-            .controls
-              input#inputEmail.pull-left required='' validate='validUsername' ng-change='usernameChanged()' ng-model='data.user.username' type='email' placeholder='Email' name='email'
-              .input-items.pull-left
-                .input-item.pull-left ng-show='validUsernameChecked === true'
-                  i.icon-ok-circle.text-success
-                .input-item.pull-left ng-show='validUsernameChecked === false'
-                  i.icon-remove-circle.text-error
-                .input-item.pull-left us-spinner='accountSpinner' visible-if='checkingUsername && accountForm.email.$valid'
-          .control-group
-            .controls
-              label.checkbox
-                input type='checkbox' ng-model='data.user.versaynews' Keep me informed of Versay news.
-          .control-group
-            label.control-label for='inputPhone' Phone
-            .controls
-              input#inputPhone type='tel' ui-mask='(999) 999-9999' placeholder='Phone' ng-model='data.user.phone'
-      #reset-password.row-fluid
-        h3 Reset Password
-        .form-horizontal
-          .control-group
-            label.control-label for='inputCurrentPassword' Current Password
-            .controls
-              input#inputCurrentPassword type='password' placeholder='Current Password' ng-model='data.user.passwordCurrent' name='passwordCurrent' validate='{ passwordErrorCurrent: validateCurrentPassword() }'
-          .control-group
-            label.control-label for='inputNewPassword' New Password
-            .controls
-              input#inputNewPassword type='password' placeholder='New Password' ng-model='data.user.password' validate='{ passwordErrorComplexity: validatePasswordComplexity() }' name='password'
-          .control-group
-            label.control-label for='inputNewPasswordRe' New Password <small>(re-enter)</small>
-            .controls
-              input#inputNewPasswordRe type='password' placeholder='New Password (re-enter)' ng-model='data.user.passwordConfirm' validate='{ passwordErrorEqualConfirm: validatePasswordEquality() }' name='passwordConfirm'
-      #app-selection.row-fluid
-        h3 Choose Applications
-        .form-horizontal
-          .control-group.applications
-            .controls
-              div ng-repeat='a in data.user.applications | filter:{visible: true}'
-                span.app-name
-                  | {{a.appName | inflector}}
-                  i.pull-right.icon-remove-circle ng-show='isUserAdmin()' ng-click='removeApplication(a)'
-              .dropdown.pull-center center-dropdown=''
-                a.dropdown-toggle.text-center.btn ng-show='isUserAdmin()' data-toggle='dropdown' stop-click='!appsAvailable()' ng-disabled='!appsAvailable()' +
-                ul.dropdown-menu.text-center
-                  div ng-repeat='a in data.user.applications | filter:{visible: false}' dropdown-item='a' ng-click='addApplication(a)'
-                    | {{a.appName | inflector}}
-      .control-group.form-buttons
-        input.btn type='reset' ng-click='cancel()' value='Cancel' ng-disabled='accountForm.$pristine'
-        input.btn.btn-primary type='submit' value='Update' ng-click='update()' ng-disabled='updateDisabled()'
-  div.loader us-spinner='defaultSpin' visible-if='loading' spin-fix='asdf'
+#change-password ng-controller='changePasswordCtrl'
+  #login-cont
+    form#login-form name='changePasswordForm' error-message=''
+      fieldset
+        img src='/images/logo_grayscale.png'
+        .action-cont.info-change-pw toggle-value='showIButton'
+          i.icon-info ng-hide='showIButton' ng-click='showInfo(true)'
+          i.icon-undo ng-show='showIButton' ng-click='showInfo(false)',
+        .notifications
+          div alert=''
+        .control-group.first
+          input#inputCurrentPassword type='password' placeholder='Current Password' ng-model='data.user.passwordCurrent' name='passwordCurrent' validate='{ passwordErrorCurrent: validateCurrentPassword() }' focus-me='true'
+        .control-group
+          input#inputNewPassword type='password' placeholder='New Password' ng-model='data.user.password' validate='{ passwordErrorComplexity: validatePasswordComplexity() }' name='password' required=''
+        .control-group
+          input#inputNewPasswordRe type='password' placeholder='New Password (re-enter)' ng-model='data.user.passwordConfirm' validate='{ passwordErrorEqualConfirm: validatePasswordEquality() }'  name='passwordConfirm' required=''
+        .control-group
+          input.btn.btn-primary type='submit' value='Change Password' ng-click='changePassword()' ng-disabled='changePasswordForm.$invalid'
+    div.loader us-spinner='defaultSpin' visible-if='loading'
