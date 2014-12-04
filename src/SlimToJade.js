@@ -1,6 +1,9 @@
 var Tokenizer = require('tokenizer');
 
+var domNodes = ['p', 'i', 'img', 'div', 'label', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8'];
+
 var S2J = function () {};
+
 S2J.prototype = {
   convert: function (input, callback) {
     var self = this,
@@ -18,19 +21,19 @@ S2J.prototype = {
     t.addRule(/^\|.*\n/, 'tPipeEndOfLine');
     // key="val"
     t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2/, 'tKeyValue');
+    // text to end of line \n
+    t.addRule(/^[^#\.\s][^\=]*\n$/, 'valueEndOfLine', this.valueEndOfLineFilter);
     // ALPHA
     t.addRule(/^[a-zA-Z0-9\-_]+[\n]?/, 'tIdentifier');
     // #ALPHA
     t.addRule(/^[#][a-zA-Z0-9\-_]+/, 'tIdName');
     // .ALPHA
     t.addRule(/^\.[a-zA-Z0-9\-_]+/, 'tClassName');
-    // text to end of line \n
-    t.addRule(/^[^#\.\s][^\=]*\n$/, 'valueEndOfLine');
     // whitespace
     t.addRule(/^[ \t]+/, 'tWhitespace');
 
     t.on('token', function (token, type) {
-      console.log('tok', token.content, token.type)
+      console.log('tok: ', token.content, token.type);
       self[type](token);
     });
 
@@ -48,7 +51,7 @@ S2J.prototype = {
         final = '';
 
     this.nodes.forEach(function (node) {
-      final += new Array(node.depth).join('  ') + (node.depth == 1 ? '  ' : '');
+      final += new Array(node.depth).join('  ') + (node.depth ? '  ' : '');
       final += node.element ? node.element : '';
       final += node.id ? node.id : '';
       final += node.classes.map(function (c) {
@@ -60,9 +63,9 @@ S2J.prototype = {
         var needsComma = false;
         final += '(' + node.attrs.map(function (a) {
           return ((a == node.attrs[node.attrs.length-1] && a != node.attrs[0]) ? ',' : '') + (a == node.attrs[0] ? '' : ' ') + a.key + '=' + a.value;
-        }).join('') + ')' + (node.content || '');
+        }).join('') + ')';
       }
-      final += '\n';
+      final += (node.content ? ' ' + node.content : '') + '\n';
     });
 
     this.final = final;
@@ -131,12 +134,22 @@ S2J.prototype = {
     var i = this.depth;
 
     while (!this.node && i != -1)
+    {
       this.node = this.depthToNode[this.depth - (i--)];
+      if (this.node) break;
+    }
 
     if (!this.node)
       throw Error('Unable to find node at depth ' + (this.depth-1));
 
     this.updateNode(undefined, undefined, undefined, undefined, token.content)
+  },
+  valueEndOfLineFilter: function (str) {
+    for (var i = 0; i < domNodes.length; i++)
+      if (str.substr(0, domNodes[i].length) == domNodes[i])
+        return false;
+
+    return true;
   }
 };
 
