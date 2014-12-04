@@ -1,16 +1,24 @@
-var Tokenizer = require('./Tokenizer');
+var Tokenizer = require('tokenizer');
 
 var S2J = function () {};
 S2J.prototype = {
   convert: function (input, callback) {
-    var t = new Tokenizer(undefined, {split: /\n/}),
-      self = this;
+    var self = this,
+        t = new Tokenizer(undefined, {
+          split: /\r?\n/
+        });
 
+    // Maps a depth to the very last node that the tokenizer saw at that depth. Useful for the pipe.
+    this.depthToNode = [];
     this.nodes = [];
     this.depth = 0;
 
     // ALPHA = 'ALPHA' 
-    // ([a-zA-Z0-9\-_]+=)(["'])(?:\\\2|.)*?\2
+    // | ALPHA \n
+    t.addRule(/^\|.*\n$/, 'tPipeEndOfLine');
+    // key="val" text to end of line \n
+    t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2[^\=\n]+[\r]?[\n]$/, 'tKeyValueEndOfLine');
+    // key="val"
     t.addRule(/^([a-zA-Z0-9\-_]+\s*?=\s*?)(["'])(\\\2|[^"']+)*?\2$/, 'tKeyValue');
     // ALPHA
     t.addRule(/^[a-zA-Z0-9\-_]+$/, 'tIdentifier');
@@ -18,8 +26,6 @@ S2J.prototype = {
     t.addRule(/^[#][a-zA-Z0-9\-_]+$/, 'tIdName');
     // .ALPHA
     t.addRule(/^\.[a-zA-Z0-9\-_]+$/, 'tClassName');
-    // \n
-    t.addRule(/^\r?\n$/, 'tEOL');
     // whitespace
     t.addRule(/^[ \t]+$/, 'tWhitespace');
 
@@ -27,16 +33,21 @@ S2J.prototype = {
       self[type](token);
     });
 
-    t._tokenize(input);
-    self.flush();
-    callback(self.final);
+    t.on('split', function (splitter) {
+      self.tEOL();
+    });
+
+    t.end(input, function () {
+      self.flush();
+      callback(self.final);
+    });
   },
   flush: function() {
     var self = this,
-      final = '';
-    
+        final = '';
+
     this.nodes.forEach(function (node) {
-      final += new Array(node.depth).join(' ');
+      final += new Array(node.depth).join('  ') + (node.depth == 1 ? '  ' : '');
       final += node.element ? node.element : '';
       final += node.id ? node.id : '';
       final += node.classes.map(function (c) {
@@ -48,29 +59,33 @@ S2J.prototype = {
         var needsComma = false;
         final += '(' + node.attrs.map(function (a) {
           return ((a == node.attrs[node.attrs.length-1] && a != node.attrs[0]) ? ',' : '') + (a == node.attrs[0] ? '' : ' ') + a.key + '=' + a.value;
-        }).join('') + ')';
+        }).join('') + ')' + (node.content || '');
       }
       final += '\n';
     });
-    
+
     this.final = final;
   },
-  updateNode: function (element, id, clazz, attr) {
+  updateNode: function (element, id, clazz, attr, content) {
     if (!this.node)
     {
       this.node = {
         depth: this.depth,
         classes: [],
-        attrs: []
+        attrs: [],
+        content: ''
       };
       this.nodes.push(this.node);
+      this.depthToNode[this.depth] = this.node;
     }
 
     this.node.element = element || this.node.element;
     this.node.id = id || this.node.id;
+    this.node.content += content || '';
 
     if (clazz)
       this.node.classes.push(clazz);
+
     if (attr)
       this.node.attrs.push(attr)
   },
@@ -85,18 +100,52 @@ S2J.prototype = {
   },
   tKeyValue: function (token) {
     var s = token.content.split('=');
-    
-    this.updateNode(undefined, undefined, undefined, {key: s[0], value: s[1]});
+
+    this.updateNode(undefined, undefined, undefined, {
+      key: s[0],
+      value: s[1]
+    });
+  },
+  tKeyValueEndOfLine: function (token) {
+    var s = token.content.split('='),
+        s2 = s[1].split(/['"]/);
+
+    s[1] = '"' + s2[1] + '"';
+
+    var content = s2[2].replace('\n', '');
+
+    this.updateNode(undefined, undefined, undefined, {
+      key: s[0],
+      value: s[1]
+    }, content);
   },
   tWhitespace: function (token) {
-    // Beginning of line?
     if (!this.node) {
-      this.depth = token.content.length;
+      var c = 0;
+
+      for (var i = 0; i < token.content.length; i++)
+        c += (token.content.substr(i, 1) == '\t') ? 1 : 0.5;
+
+      this.depth = Math.round(c);
     }
   },
   tEOL: function (token) {
-    console.log('TO END OF LINE', token.content);
+    this.depth = 0;
     this.node = undefined;
+  },
+  tPipeEndOfLine: function (token) {
+    this.node = undefined;
+
+    // Track back to last node at this depth.
+    var i = this.depth;
+
+    while (!this.node && i != -1)
+      this.node = this.depthToNode[this.depth - (i--)];
+
+    if (!this.node)
+      throw Error('Unable to find node at depth ' + (this.depth-1));
+
+    this.updateNode(undefined, undefined, undefined, undefined, token.content)
   }
 };
 

@@ -5,10 +5,9 @@ var commander = require('commander'),
 commander.version('0.0.1').
   usage('[options] <file ...>').
 	parse(process.argv);
-  
+
 commander.args.forEach(function (fn) {
-  var fileContents = fs.readFileSync(fn).toString();
-  S2J.convert(fileContents, function (lines) {
-      process.stdout.write(lines);
+  S2J.convert(fs.readFileSync(fn).toString(), function (lines) {
+  	process.stdout.write(lines);
   });
 });
