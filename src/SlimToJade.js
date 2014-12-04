@@ -33,7 +33,7 @@ S2J.prototype = {
     t.addRule(/^[ \t]+/, 'tWhitespace');
 
     t.on('token', function (token, type) {
-      console.log('tok: ', token.content, token.type);
+      console.log('tok:', token.content);
       self[type](token);
     });
 
@@ -106,8 +106,8 @@ S2J.prototype = {
     var s = token.content.split('=');
 
     this.updateNode(undefined, undefined, undefined, {
-      key: s[0],
-      value: s[1]
+      key: s.shift(),
+      value: s.join('=')
     });
   },
   valueEndOfLine: function (token) {
@@ -131,12 +131,12 @@ S2J.prototype = {
     this.node = undefined;
 
     // Track back to last node at this depth.
-    var i = this.depth;
+    var i = this.depth - 1;
 
     while (!this.node && i != -1)
     {
-      this.node = this.depthToNode[this.depth - (i--)];
-      if (this.node) break;
+      this.node = this.depthToNode[i];
+      i--;
     }
 
     if (!this.node)
