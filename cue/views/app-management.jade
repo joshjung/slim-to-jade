@@ -1,0 +1,17 @@
+page-title(ng-controller='appManagementCtrl') ='"CUE Application Management"'
+  div(navbar='', ng-controller='dashboardNavCtrl')
+  .notifications(ng-show='notifications.length')
+    div(alert='')
+  h2.text-center CUE Application Management
+  a(href='#/app-details')
+    input#new-app-btn.btn.btn-primary(type='button', value='New Application')
+  input.app-filter(type='text', ng-model='state.appFilter.appName')
+  #apps-ctn
+     table
+       tbody
+        tr(ng-repeat='a in appConfigs | filter:state.appFilter | orderBy:state.appOrder')
+           td.delete-col
+            i.icon-remove-circle(ng-click='deleteAppConfig(a)')
+           td.app-name-col
+            once-href(once-wait-for='a._id.$oid') ='"#/app-details/" + a._id.$oid'
+              span(once-text='a.appName | inflector')

@@ -1,0 +1,41 @@
+#notifications-widget.widget.flip-cont ng-class='{ flipped: settings }'
+  .widget-header
+    h4 Notifications
+    .widget-actions
+      a href='http://www.cuedashboard.com/support-articles/now-widget-notifications' target='_blank'
+        .action-cont
+          i.icon-info
+      .action-cont toggle-value='settings'
+        i.icon-gear ng-hide='settings' ng-click='trackEvent()'
+        i.icon-undo ng-show='settings' ng-click='trackEvent()'
+  .widget-body.flipper
+    .scrollable.front
+      table ng-show='notifications'
+        tbody
+          tr.v-fade-out-animation ng-repeat='notif in notifications | limitTo:100 track by keyForNotification(notif)' ng-class='{even: $index % 2 == 1}' once-style='{opacity: notifOpacity(notif)}'
+            td.first.msg-col.text-left
+              span once-text='notif.count'
+              | &nbsp;
+              span once-text='notif.notificationType'
+              | &nbsp;
+              span once-text='notif.level | lowercase'
+            td.time-col.text-right update-on-interval='60000' interval-value='notif.timestamp | fromNow'
+            td.delete-col.text-right
+              i.icon-remove-circle ng-click='deleteNotification(notif)' class="animated-row"
+      div ng-hide='notifications'
+        img src='/images/no-data.png' style='display: block; margin: 10px auto; margin-top: 30px;'
+    .settings.back
+      h3.text-center Send a notification when...
+      .round-cont
+        .settings-line
+          .pull-left.settings-indicator &gt;
+          .clearfix.setting
+            input.warning-input.readonly-btn.pull-left type='text' maxlength='4' ng-model='upperPref().warningValue' numbers-only='' ng-change='updatePrefs()'
+            .settings-label.pull-left concurrent callers
+            .pull-right.switch-small data-on='success' make-switch='updatePrefs()'
+              input type='checkbox' ng-model='upperPref().warningEnabled'
+          .clearfix.setting
+            input.alert-input.readonly-btn.pull-left type='text' maxlength='4' ng-model='upperPref().alertValue' numbers-only='' ng-change='updatePrefs()'
+            .pull-right.switch-small data-on='success' make-switch='updatePrefs()'
+              input type='checkbox' ng-model='upperPref().alertEnabled'
+      .fine-print Notifications will be sent to the email address associated with your account. You can update your address <a href='#/account'>here</a>.

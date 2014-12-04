@@ -1,0 +1,39 @@
+#call-outcomes-widget.widget
+  .widget-header
+    h4 Call Outcomes
+    .widget-actions
+      .action-cont(toggle-value='state.paused', ng-click='trackEvent()')
+        i.icon-pause(ng-hide='state.paused')
+        i.icon-play(ng-show='state.paused')
+      a(href='http://www.cuedashboard.com/support-articles/trends-widget-call-outcomes', target='_blank')
+        .action-cont
+          i.icon-info
+      .action-cont(ng-click='toggleExpanded()')
+        i.icon-resize-horizontal
+  .widget-body
+    div(ng-show='trendsData.outcomesInfo')
+      .dropdown.interval.pull-center(center-dropdown='')
+        a.dropdown-toggle.text-center.round-btn(href='', data-toggle='dropdown')
+          span(ng-if='!customSelected()') {{state.selectedInt.getName()}}
+          span(ng-if='customSelected()') {{state.selectedInt._start | date}} - {{state.selectedInt._end | date}}
+         ul.dropdown-menu.text-center
+           li ng-model='state.selectedInt' dropdown-item='i' ng-repeat='i in intervals' ng-click='trackEvent(i)'
+            span.calloutcome-interval(once-text='i.getName()')
+           li dropdown-item='customInterval' ng-model='state.selectedInt' ng-click='onClickCustom($event)'| Custom
+      .dropdown.pull-center.custom
+        a.dropdown-toggle(href='' data-toggle='dropdown', dropdown='state.custom')
+        ul.dropdown-menu.text-center(stop-click='', ng-click='refreshDataThrottled()')
+          .calendar.pull-left(kalendae='customKalendaeOpts' start-date='state.selectedInt._start' end-date='state.selectedInt._end', date-change='refreshDataThrottled()')
+      div(ng-show='chart')
+        .chart(ng-show='state.selectedOutcomes.length' google-chart='', chart='chart')
+        h3.text-center(ng-hide='state.selectedOutcomes.length', style='min-height: 181px; padding-top: 60px;') Select outcomes to view data
+        .series-btns
+          a.round-btn.text-center.series-btn(ng-repeat='o in state.selectedOutcomes | orderBy:o' ng-click='removeOutcome(o, $index)' ng-style='styleForOutcome($index)', href='') {{o | lowercase | inflector}}
+        #add-outcome.dropup.interval.pull-center(center-dropdown='' ng-hide='hideAddOutcome()', ng-class='{ disabled: !canAddOutcomes()}')
+          a.dropdown-toggle.round-btn.text-center(data-toggle='dropdown' style='color: black; background: white;' href='', stop-click='!canAddOutcomes()')
+            i.icon-plus
+           ul.dropdown-menu.text-center
+             li ng-repeat='o in outcomes | filter:notSelected' ng-click='selectOutcome(o)' dropdown-item='o'
+              span(once-text='o | lowercase | inflector')
+      div(ng-hide='chart')
+        img(src='/images/no-data.png', style='display: block; height: 310px; margin: 0 auto; margin-top: 14px')

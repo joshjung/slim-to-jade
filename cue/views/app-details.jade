@@ -1,0 +1,60 @@
+div(ng-controller='appDetailsCtrl', page-title='getPageTitle()')
+  div(navbar='', ng-controller='dashboardNavCtrl')
+  .notifications(ng-show='notifications.length')
+    div(alert='')
+  h2.text-center Application Details
+  #app-details-ctn
+    form.form-horizontal(name='appDetailsForm')
+      .control-group
+        label.control-label(for='inputAppName') App Name
+        .controls
+          input#inputAppName(type='text' ng-model='editedApp.appName', required='')
+      .control-group
+        label.control-label(for='inputIdentifier') Identifier
+        .controls
+          input#inputIdentifier(type='text', ng-model='editedApp.identifier')
+      .control-group
+        label.control-label(for='inputDnis') DNIS List
+        .controls
+          .dnis-ctn(ng-repeat='d in editedApp.dnis')
+            input.dnis(type='tel' ui-mask='(999) 999-9999' ng-model='d.value', required='')
+            i.pull-right.icon-remove-circle(ng-click='removeDnis(d)')
+          input.btn.add-btn(type='button' ng-click='addDnis()', value='+')
+      .control-group
+        label.control-label(for='inputVisible') Visible
+        .controls
+          input#inputVisible(type='checkbox', ng-model='editedApp.visible')
+      .control-group
+        label.control-label(for='inputDefaultPreferences') Default Preferences
+        .controls
+          .pref-ctn(ng-repeat='p in editedApp.preferences')
+            input.pref.key(type='text' ng-model='p.key', required='')
+            input.pref.value(type='text' ng-model='p.value', required='')
+            i.pull-right.icon-remove-circle(ng-click='removePref(p)')
+          input.btn.add-btn(type='button' ng-click='addPref()', value='+')
+      .control-group
+        label.control-label Default Notification Preferences
+        .controls
+          .pref-ctn.notif-pref-ctn(ng-repeat='n in editedApp.notificationPrefs')
+            input.pref.type(type='text' ng-model='n.notificationType', required='')
+            input.pref.value.warning(type='text' ng-model='n.warningValue', required='')
+            input.pref.enabled.warning(type='checkbox', ng-model='n.warningEnabled')
+            input.pref.value.alert(type='text' ng-model='n.alertValue', required='')
+            input.pref.enabled.alert(type='checkbox', ng-model='n.alertEnabled')
+            i.pull-right.icon-remove-circle(ng-click='removeNotifPref(n)')
+          input.btn.add-btn(type='button' ng-click='addNotifPref()', value='+')
+      .control-group
+        label.control-label(for='selectTimezone') Timezone
+        .controls
+          select#selectTimezone(ng-model='editedApp.timezone', ng-options='t.value as t.label for t in timezones')
+      .control-group
+        label.control-label Dialog State Info
+        .controls
+          .pref-ctn(ng-repeat='d in editedApp.dialogStateInfo')
+            input.pref.key(type='text' ng-model='d.key', required='')
+            input.pref.value(type='text' ng-model='d.value', required='')
+            i.pull-right.icon-remove-circle(ng-click='removeDialogStateInfo(d)')
+          input.btn.add-btn(type='button' ng-click='addDialogStateInfo()', value='+')
+      .control-group.form-buttons
+        input.btn(type='button' ng-click='cancel()' value='Cancel', ng-disabled='userDetailsForm.$pristine')
+        input.btn.btn-primary(type='submit' value='Save' ng-click='save()', ng-disabled='userDetailsForm.$pristine || userDetailsForm.$invalid')

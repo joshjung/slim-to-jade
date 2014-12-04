@@ -1,0 +1,57 @@
+#dashboard-cont ng-controller='dashboardCtrl' page-title='dashboardPageTitle()'
+  div navbar=''
+    div ng-controller='dashboardNavCtrl'
+      #appDnisDropdown.show-big
+        .dropdown.pull-center center-dropdown=''
+          a.btn.dropdown-toggle href='' data-toggle='dropdown'
+            span() {{userData.selectedAppDnis.app.appName | inflector}}
+          ul.dropdown-menu.text-center
+            div dropdown-item='ad' ng-click='appDnisSelected()' ng-model='userData.selectedAppDnis' ng-repeat='ad in userData.appDnis | filter:{visible: true}'
+              span once-text='ad.app.appName | inflector'
+      #appDnisDropdown.show-small
+        .dropdown.pull-center center-dropdown=''
+          a.btn.dropdown-toggle href='' data-toggle='dropdown'
+            span() {{userData.selectedAppDnis.app.appName | inflector}}
+          ul.dropdown-menu.text-center
+            div dropdown-item='ad' ng-click='appDnisSelected()' ng-model='userData.selectedAppDnis' ng-repeat='ad in userData.appDnis | filter:{visible: true}'
+              span once-text='ad.app.appName | inflector'
+      .clearfix
+  .notifications ng-show='notifications.length'
+    div alert=''
+  #now-trends.dual-btn ng-click='switchedTab()'
+    #now-btn.left-col ng-model='trends' radio='f'
+      div
+        span Now
+    #trends-btn.right-col ng-model='trends' radio='t'
+      div
+        span Trends
+    .clearfix
+  div
+    #now-cont.widgets-cont ng-hide='trends'
+      .widget-cont ng-controller='callsWidgetCtrl'
+        div ng-include='"template/widgets/calls.html"'
+      .widget-cont ng-controller='timelineWidgetCtrl' ng-class='{wide: state.expanded}'
+        div ng-include='"template/widgets/timeline.html"'
+      .widget-cont ng-controller='callersWidgetCtrl'
+        div ng-include='"template/widgets/callers.html"'
+      .widget-cont ng-controller='engagementWidgetCtrl'
+        div ng-include='"template/widgets/engagement.html"'
+      .widget-cont ng-controller='notificationsWidgetCtrl'
+        div ng-include='"template/widgets/notifications.html"'
+      .widget-cont ng-controller='mapWidgetCtrl'
+        div ng-include='"template/widgets/locations-now.html"'
+    #trends-cont.widgets-cont ng-show='trends'
+      .widget-cont ng-controller='callVolumeWidgetCtrl' ng-class='{wide: state.expanded}'
+        div ng-include='"template/widgets/call-volume.html"'
+      .widget-cont ng-controller='dialogsWidgetCtrl'
+        div ng-include='"template/widgets/dialogs.html"'
+      .widget-cont ng-controller='recognitionsWidgetCtrl'
+        div ng-include='"template/widgets/recognitions.html"'
+      .widget-cont ng-controller='callOutcomesWidgetCtrl' ng-class='{wide: state.expanded}'
+        div ng-include='"template/widgets/call-outcomes.html"'
+      .widget-cont ng-controller='hangupsWidgetCtrl'
+        div ng-include='"template/widgets/hang-ups.html"'
+      .widget-cont ng-controller='locationsTrendsWidgetCtrl'
+        div ng-include='"template/widgets/locations-trends.html"'
+      /.widget-cont ng-include='"template/widgets/tasks.html"'
+  .loader us-spinner='defaultSpin' visible-if='loading' spin-fix=''

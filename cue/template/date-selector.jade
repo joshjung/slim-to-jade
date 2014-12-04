@@ -1,0 +1,3 @@
+select.month(ng-options='m.index as m.month for m in months' ng-model='month' ng-change='refreshModel()', ng-required='')
+select.day(ng-options='d for d in days' ng-model='day' ng-change='refreshModel()', ng-required='')
+select.year(ng-options='y for y in years' ng-model='year' ng-change='refreshModel()', ng-required='')

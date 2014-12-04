@@ -1,0 +1,99 @@
+#engagement-widget.widget
+  .widget-header
+    h4 Engagement
+    .widget-actions
+      a href='http://www.cuedashboard.com/support-articles/now-widget-engagement' target='_blank'
+        .action-cont
+          i.icon-info
+  .widget-body
+    #engagement-top
+      div
+        .round-cont.avg-cont radio='Time' ng-model='state.selectedType' ng-click='trackAvgTime()'
+          h1 duration-since-timer='activeCallAverageLength()' is-duration='true'
+          span Avg. Time
+        .avg-cont.round-cont radio='Depth' ng-model='state.selectedType' ng-click='trackAvgDepth()'
+          h1 ng-bind='nowData.activeCallsInfo.activeCallAvgDepth | round'
+          span Avg. Depth
+        .avg-cont.round-cont radio='Errors' ng-model='state.selectedType' ng-click='trackAvgErrors()'
+          h1 ng-bind='nowData.activeCallsInfo.activeCallErrors | number:true'
+          span Avg. Errors
+      div
+        .round-cont.indicator-cont target-gradient='selectedSummary().avgCallLength' ng-model='nowData.activeCallsInfo.activeCallAvgLength' ng-click='trackAvgTime()'
+        .round-cont.indicator-cont target-gradient='selectedSummary().avgDepth' ng-model='nowData.activeCallsInfo.activeCallAvgDepth' ng-click='trackAvgDepth()'
+        .round-cont.indicator-cont target-gradient='selectedSummary().avgErrorCount' ng-model='nowData.activeCallsInfo.activeCallErrors' ng-click='trackAvgErrors()'
+      .clearfix
+      div
+        .round-cont.active-cont radio='Time' ng-model='state.selectedType' ng-click='trackAvgTime()'
+          span() {{selectedSummary().avgCallLength | formatMilliseconds}}
+        .round-cont.active-cont radio='Depth' ng-model='state.selectedType' ng-click='trackAvgDepth()'
+          span() {{selectedSummary().avgDepth | round}}
+        .round-cont.active-cont radio='Errors' ng-model='state.selectedType' ng-click='trackAvgErrors()'
+          span() {{selectedSummary().avgErrorCount | number:true}}
+      .clearfix
+      div
+        .dropdown.interval.pull-center.small center-dropdown=''
+          a.dropdown-toggle.round-btn href='' data-toggle='dropdown' {{state.selectedInt.displayName}}
+          ul.dropdown-menu style='min-width: 140px'
+            li.text-center.engagement-interval dropdown-item='i' ng-model='state.selectedInt' ng-repeat='i in intervals' ng-click='trackIntervalEvent(i)'
+              | {{i.displayName}}
+    #engagement-bottom ng-switch='state.selectedType'
+      #engagement-call-time ng-switch-when='Time'
+        h2 Call Time
+        table
+          tbody
+            tr
+              td.first Less than 30 Seconds
+              td.second
+                strong() {{nowData.activeCallsInfo.timeCat1Count | number}}
+            tr
+              td.first 30 - 60 Seconds
+              td.second
+                strong() {{nowData.activeCallsInfo.timeCat2Count | number}}
+            tr
+              td.first 1 - 3 Minutes
+              td.second
+                strong() {{nowData.activeCallsInfo.timeCat3Count | number}}
+            tr.last
+              td.first More than 3 Minutes
+              td.second
+                strong() {{nowData.activeCallsInfo.timeCat4Count | number}}
+      #engagement-depth ng-switch-when='Depth'
+        h2 Call Depth
+        table
+          tbody
+            tr
+              td.first Fewer than 2 Dialog States
+              td.second
+                strong() {{nowData.activeCallsInfo.depthCat1Count | number}}
+            tr
+              td.first 2 - 4 Dialog States
+              td.second
+                strong() {{nowData.activeCallsInfo.depthCat2Count | number}}
+            tr
+              td.first 5 - 7 Dialog States
+              td.second
+                strong() {{nowData.activeCallsInfo.depthCat3Count | number}}
+            tr.last
+              td.first More than 7 Dialog States
+              td.second
+                strong() {{nowData.activeCallsInfo.depthCat4Count | number}}
+      #engagement-errors ng-switch-when='Errors'
+        h2 Call Errors
+        table
+          tbody
+            tr
+              td.first No Errors
+              td.second
+                strong() {{nowData.activeCallsInfo.errorCat1Count | number}}
+            tr
+              td.first 1 - 2 Errors
+              td.second
+                strong() {{nowData.activeCallsInfo.errorCat2Count | number}}
+            tr
+              td.first 3 - 4 Errors
+              td.second
+                strong() {{nowData.activeCallsInfo.errorCat3Count | number}}
+            tr.last
+              td.first More than 4 Errors
+              td.second
+                strong() {{nowData.activeCallsInfo.errorCat4Count | number}}

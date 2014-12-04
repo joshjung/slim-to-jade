@@ -1,0 +1,49 @@
+#widget-desc-cont ng-controller='widgetDescCtrl' page-title='"Help - Cue Analytics"'
+  div navbar=''
+  .content
+    h1 Widget Information
+    h2 General
+    p In most widgets, the user has the option to adjust the time period by clicking on the time period oval.  The default view is "Today".  Click to select a new time period.
+    p In general, users will notice there are pause and play buttons in the upper right hand corner of many widgets in both the Now and Trends tabs. The play and pause buttons are to give users control to pause live updates and then resume.
+    p The gear, when clicked, flips the widget to allow the user to configure parameters pertaining to that widget. The parameters are described within the description of each widget.
+    br
+    h2 Now
+    p Now widgets display dynamic information that is current for the time-frame selected
+    #calls-desc
+      h3 Calls
+      p This widget shows the number of active callers currently in the system. The scale to the left of the active call counter shows the peak number of active callers for the time period selected.  The scale will change colors and turn red when the peak has been exceeded.  The active caller peak changes once a caller comes in that exceeds the peak number of calls.  A new peak is established once that caller has disconnected.  For example:  The Active Caller peak is 49 for Today.  Call number 50 arrives and the scale turns red.  Once call number 50 has left the application (hang up, transfer) the peak value is updated to 50.  
+    #callers-desc
+      h3 Callers
+      p This widget shows what number of the current callers and repeat callers by ANI.  The Active tab will show the callers in the system by ANI with the most recent call being at the top. A repeat caller is a phone call received from an ANI more than once within a number of hours as determined by the user. The threshold for repeat callers is set by selecting the configuration gear and sliding the button to the level appropriate for the application.
+    #engagement-desc
+      h3 Engagement
+      p This widget provides a view into the average time callers were contained in the application (Avg. Time), how far into the IVR have they gone/how many dialog states have transitioned (Avg. Depth), and the average number of no match/no input events experienced (Avg. Errors).  These averages are determined based on the time period selected. 
+      p Click on any one of the three averages to see more detailed information.
+      p Below the averages is the active call average for each category.  The colored bars above each average will change to red as you approach the current average.
+    #notifications-desc
+      h3 Notifications
+      p This widget will show notifications that have been e-mailed to the user.  The color will fade as notifications age.  The gear widget allows users to turn on/off notifications and to set notification thresholds for maximum and minimum concurrent callers.
+    #locations-now-desc
+      h3 Locations
+      p This widget displays a map showing where current callers are calling from based on area code of the DNIS.
+      p Map library provided by <a href="http://leafletjs.com/">Leaflet</a>. Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>
+    br
+    h2 Trends
+    p Trends widgets display historical trends for the selected period and comparisons of current activity to past activity for a selected time period.
+    #call-volume-desc
+      h3 Call Volume
+      p Call Volume on the Trends tab is a view into the total number of calls for a specific time period. This widget also provides the option to compare two selected time periods.
+    #hang-ups-desc
+      h3 Hang Ups
+      p Hang Ups on the Trends tab displays the dialog state callers were in when the call ended via hangup.  No Match will increment when the caller speaks something that the recognition engine does not have in grammar.  No Input will increment when the caller speech is not detected.
+      p Short Calls are calls that end before the first grammar is activated.
+    #call-outcomes-desc
+      h3 Call Outcomes
+      p Outcomes are defined in the application and aggregate in this widget upon the completion of a call. Examples of common outcomes include: Hang Up, Transfer to Operator and Transfer to Department. 
+      p This view allows for up to three outcomes to be graphed.  Click on the plus to add another outcome.  Click on an outcome name to remove it.  The background color of the outcome name determines the plot color on the graph.  This is determined based on the order the outcomes are added to the graph.
+    #locations-trends-desc
+      h3 Locations
+      p This widget provides a count of calls by state. State is determined by the 3-digit area code. Different time periods or a customized time period may be selected by clicking on the button containing the current time period being shown. The default view is "Today"
+    #dialogs-desc
+      h3 Dialogs
+      p This widget displays the number of times each dialog state has been traversed by a caller and the average duration (time spent in the dialog state), average number of inputs (number of times callers submitted an answer in either speech or DTMF), the average number of No Match,  and the average number of No Inputs.  Averages will increment after a call has ended. Dialog states can be sorted by column headers. 

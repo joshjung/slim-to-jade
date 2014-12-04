@@ -2,14 +2,19 @@ var Tokenizer = require('tokenizer');
 
 var domNodes = ['p', 'i', 'img', 'div', 'label', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8'];
 
-var S2J = function () {};
+var S2J = function (errHandler) {
+  this.errHandler = errHandler;
+};
 
 S2J.prototype = {
   convert: function (input, callback) {
+    input += '\n';
     var self = this,
         t = new Tokenizer(undefined, {
           split: /\r?\n/
-        });
+        }, this.errorHandler.bind(this));
+
+    this.callback = callback;
 
     // Maps a depth to the very last node that the tokenizer saw at that depth. Useful for the pipe.
     this.depthToNode = [];
@@ -17,6 +22,8 @@ S2J.prototype = {
     this.depth = 0;
 
     // ALPHA = 'ALPHA' 
+    // / ALPHA \n
+    t.addRule(/^\/.*\n/, 'tComment');
     // | ALPHA \n
     t.addRule(/^\|.*\n/, 'tPipeEndOfLine');
     // key="val"
@@ -31,9 +38,9 @@ S2J.prototype = {
     t.addRule(/^\.[a-zA-Z0-9\-_]+/, 'tClassName');
     // whitespace
     t.addRule(/^[ \t]+/, 'tWhitespace');
+    t.addRule(/^[\n]/, 'tLineEndOnly');
 
     t.on('token', function (token, type) {
-      console.log('tok:', token.content);
       self[type](token);
     });
 
@@ -43,7 +50,7 @@ S2J.prototype = {
 
     t.end(input, function () {
       self.flush();
-      callback(self.final);
+      callback(undefined, self.final);
     });
   },
   flush: function() {
@@ -123,6 +130,9 @@ S2J.prototype = {
       this.depth = Math.round(c);
     }
   },
+  tComment: function () {
+    //Ignore.
+  },
   tEOL: function (token) {
     this.depth = 0;
     this.node = undefined;
@@ -140,7 +150,7 @@ S2J.prototype = {
     }
 
     if (!this.node)
-      throw Error('Unable to find node at depth ' + (this.depth-1));
+      this.callback(Error('Unable to find node at depth ' + (this.depth-1)));
 
     this.updateNode(undefined, undefined, undefined, undefined, token.content)
   },
@@ -150,7 +160,12 @@ S2J.prototype = {
         return false;
 
     return true;
+  },
+  errorHandler: function (err) {
+    if (this.errHandler)
+      this.errHandler(err)
+    else throw err;
   }
 };
 
-module.exports = new S2J();
+module.exports = S2J;

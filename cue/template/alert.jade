@@ -1,0 +1,7 @@
+div(ng-if='notification()')
+  ng-class.alert ='notification() && "alert-" + notification().type'
+    button.close(type='button', ng-click='close()')
+      ng-class.icon-remove-circle ='notification() && "text-" + notification().type'
+    ng-class.icon-warning-sign.pull-left ='notification() && "text-" + notification().type'
+    .pull-left.text () {{notification().text}}
+    .clearfix

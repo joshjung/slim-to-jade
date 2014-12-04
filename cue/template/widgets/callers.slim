@@ -1,0 +1,72 @@
+#callers-widget.widget.flip-cont ng-init='state.selectedType = "activeCalls"' ng-class='{flipped: state.settings}'
+  .widget-header
+    h4 Callers
+    .widget-actions
+      .action-cont toggle-value='state.paused' ng-hide='state.settings'
+        i.icon-pause ng-hide='state.paused' ng-click='trackPauseEvent()'
+        i.icon-play ng-show='state.paused' ng-click='trackPauseEvent()'
+      a href='http://www.cuedashboard.com/support-articles/now-widget-callers' target='_blank'
+        .action-cont
+          i.icon-info
+      .action-cont toggle-value='state.settings'
+        i.icon-gear ng-hide='state.settings' ng-click='trackSettingsEvent()'
+        i.icon-undo ng-show='state.settings' ng-click='trackSettingsEvent()'
+  .widget-body.flipper
+    .front
+      div ng-show='activeCallsInfo'
+        #active-repeat.dual-btn
+          .left-col ng-model='state.selectedType' radio='activeCalls'
+            div ng-click='trackEvent("activeCalls")'
+              h1() {{activeCallsInfo.nActiveCalls | number}}
+              span Active
+          .right-col ng-model='state.selectedType' radio='repeatCalls'
+            div ng-click='trackEvent("repeatCalls")'
+              h1() {{activeCallsInfo.nRepeatCalls | number}}
+              span Repeat
+          .clearfix
+        table ng-show='state.selectedType === "activeCalls"'
+          thead
+            tr
+              th.first.ani-col.text-left ANI
+              th.dialog-col.text-right Dialog State
+              th.loc-col.text-right Loc
+              th.last.duration-col.text-right Duration
+        .scrollable scroll-adjust='activeCallsInfo["activeCalls"].length' ng-show='state.selectedType === "activeCalls"'
+          div
+            table ng-show='activeCallsInfo[state.selectedType]'
+              tbody
+                tr ng-repeat='call in activeCallsInfo["activeCalls"] track by keyForCall(call)' ng-class='{even: $index % 2 === 1}'
+                  td.first.ani-col.text-left once-text='call.ani | phoneNumber'
+                  td.dialog-col.text-right
+                    div bind-truncate='call.currentState'
+                  td.loc-col.text-right once-text='call.ani | location'
+                  td.last.duration-col.text-right once='' duration-since-timer='call.startTime'
+            div ng-hide='activeCallsInfo["activeCalls"]'
+              img src='/images/no-data.png' style='display: block; height: 220px; margin: 0 auto; margin-top: 14px'
+        table ng-show='state.selectedType === "repeatCalls"'
+          thead
+            tr
+              th.first.ani-col.text-left ANI
+              th.dialog-col.text-right Dialog State
+              th.loc-col.text-right Loc
+              th.last.duration-col.text-right Duration
+        .scrollable scroll-adjust='activeCallsInfo["repeatCalls"].length' ng-show='state.selectedType === "repeatCalls"'
+          div
+            table ng-show='activeCallsInfo["repeatCalls"]'
+              tbody
+                tr ng-repeat='call in activeCallsInfo["repeatCalls"] track by keyForCall(call)' ng-class='{even: $index % 2 === 1}'
+                  td.first.ani-col.text-left once-text='call.ani | phoneNumber'
+                  td.dialog-col.text-right
+                    div bind-truncate='call.currentState'
+                  td.loc-col.text-right once-text='call.ani | location'
+                  td.last.duration-col.text-right once='' duration-since-timer='call.startTime'
+            div ng-hide='activeCallsInfo["repeatCalls"]'
+              img src='/images/no-data.png' style='display: block; height: 220px; margin: 0 auto; margin-top: 14px'
+    .back.settings
+      h3.text-center Repeat Caller Threshold
+      .round
+        h3
+          span>() {{userData.selectedApp.preferences.repeatCallerThreshold}}
+          span ng-pluralize='' count='userData.selectedApp.preferences.repeatCallerThreshold' when='{ one: "hour", other: "hours" }'
+      .slider slider='userData.selectedApp.preferences.repeatCallerThreshold' slider-opts='{ min: repeatMin, max: repeatMax, stop: onSliderStop }'
+      .slider-ticks-cont slider-ticks='{ min: repeatMin, max: repeatMax, tick: repeatTick }'
